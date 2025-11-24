@@ -28,14 +28,14 @@ def main():
     
     # 2. CARGAR DATOS NECESARIOS
     if not TRAIN_FILE.exists():
-        print("❌ Error: Falta train.pt"); sys.exit(1)
+        print(" Error: Falta train.pt"); sys.exit(1)
     
     # Cargamos todo lo que guardó prepare_data.py
     meta = torch.load(TRAIN_FILE)
     scaler = meta['scaler']
     coords = meta['coords']
     
-    # Recuperamos la Climatología (El mapa promedio histórico)
+    # Recuperamos el mapa promedio histórico
     if 'climatology' in meta:
         climatology_flat = meta['climatology'].numpy().flatten()
         print(" Climatología histórica recuperada.")

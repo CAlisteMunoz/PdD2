@@ -11,7 +11,7 @@ sys.path.append(str(PROJECT_ROOT))
 from src.dataset import ClimateDataset
 
 def main(args):
-    print("--- ⚙️ Preparando Datos (Modo Anomalías) ---")
+    print("--- Preparando Datos ---")
     RAW_DATA = PROJECT_ROOT / "data" / "raw" / "prw_*.nc"
     PROCESSED_DIR = PROJECT_ROOT / "data" / "processed"
     PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
@@ -52,7 +52,7 @@ def main(args):
         'climatology': torch.from_numpy(dataset.climatology.values).float()
     }, PROCESSED_DIR / "val.pt")
     
-    print("✅ Datos de anomalías listos.")
+    print(" Datos de anomalías listos.")
 
 if __name__ == "__main__":
     main(None)

@@ -8,25 +8,24 @@ class ClimateDataset(Dataset):
                  start_year=1850, end_year=2014, 
                  window_size=20, lag=50, step=2):
         
-        print(f"📂 Cargando datos (Anomalías): {nc_files_pattern}")
+        print(f" Cargando datos (Anomalías): {nc_files_pattern}")
         self.ds = xr.open_mfdataset(str(nc_files_pattern), combine='by_coords', engine='netcdf4')
         # Cargar todo a RAM
         self.data_array = self.ds[var_name].load()
         
-        # 1. CALCULAR CLIMATOLOGÍA (El mapa "base" estático)
+        # 1. CALCULAR CLIMATOLOGÍA (El mapa "base")
         # Promediamos todo el periodo histórico para tener la referencia
         self.climatology = self.data_array.mean(dim='time')
-        print("✅ Climatología base calculada.")
+        print(" Climatología base calculada.")
         
         # Coordenadas
         self.lat = self.data_array.lat.values
         self.lon = self.data_array.lon.values
         
         # 2. CALCULAR ANOMALÍAS (Dato Real - Promedio Histórico)
-        # Esto elimina la geografía obvia y deja solo el cambio climático
         self.anomalies = self.data_array - self.climatology
         
-        # Normalización de Anomalías (Suelen ser valores pequeños entre -5 y +5)
+        # Normalización de Anomalías
         self.min_val = float(self.anomalies.min())
         self.max_val = float(self.anomalies.max())
         print(f"⚖️ Rango Anomalías: {self.min_val:.3f} a {self.max_val:.3f}")
@@ -47,14 +46,14 @@ class ClimateDataset(Dataset):
             })
             current_year += step
             
-        print(f"✅ Muestras generadas: {len(self.samples)}")
+        print(f" Muestras generadas: {len(self.samples)}")
 
     def __len__(self): return len(self.samples)
 
     def __getitem__(self, idx):
         period = self.samples[idx]
         
-        # Tomamos las ANOMALÍAS, no los datos crudos
+        # Tomamos las ANOMALÍAS, no los datos crudos (raw) 
         # Input: Anomalía promedio del pasado
         inp = self.anomalies.sel(time=slice(*period['input'])).mean(dim='time')
         # Target: Anomalía promedio del futuro
