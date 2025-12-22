@@ -1,41 +1,35 @@
 #!/bin/bash
-#SBATCH --job-name=clima_future
-#SBATCH --output=/mnt/beegfs/home/caliste/Proyecto_Clima_ML/outputs/logs/future_%j.log
-#SBATCH --error=/mnt/beegfs/home/caliste/Proyecto_Clima_ML/outputs/logs/future_err_%j.log
+#SBATCH --job-name=clima_ml
+#SBATCH --output=logs/gpu_%j.out
+#SBATCH --error=logs/gpu_%j.err
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=4
-#SBATCH --mem=32G
+#SBATCH --cpus-per-task=8
 #SBATCH --gres=gpu:1
-#SBATCH --time=03:00:00
+#SBATCH --mem=64G
+#SBATCH --time=96:00:00
 #SBATCH --partition=ngen-ko
 
-# --- CONFIGURACIÓN ---
-PROJECT_ROOT="/mnt/beegfs/home/caliste/Proyecto_Clima_ML"
-source ~/.bashrc
-micromamba activate clima_ai
-cd "$PROJECT_ROOT/scripts"
+export TMPDIR=/tmp
+PYTHON_EXEC="$HOME/micromamba/envs/clima_ai/bin/python"
+PROJECT_DIR="$HOME/Proyecto_Clima_ML"
+SCRIPT_DIR="$PROJECT_DIR/scripts"
+SRC_DIR="$PROJECT_DIR/src"
 
-echo "=== INICIANDO PIPELINE DE PREDICCIÓN FUTURA ==="
-echo "Fecha: $(date)"
-echo "Nodo: $(hostname)"
+cd "$SCRIPT_DIR" || exit 1
 
-# 1. PREPARACIÓN (Genera train.pt y val.pt con ventanas deslizantes)
-echo -e "\n>>> [1/3] PREPARANDO DATOS (80/20 SPLIT)..."
-python prepare_data.py
+echo "=========================================="
+echo "🚀 JOB GPU A100: $(hostname)"
+echo "=========================================="
 
-if [ $? -ne 0 ]; then echo " Falló preparación"; exit 1; fi
+echo ">>> [1] VERIFICANDO GPU (NVIDIA-SMI):"
+nvidia-smi
 
-# 2. ENTRENAMIENTO (Genera best_model.pth)
-echo -e "\n>>> [2/3] ENTRENANDO MODELO..."
-python train.py --epochs 3000 --lr 0.0001
+echo ">>> [2] VERIFICANDO PYTORCH (CUDA):"
+"$PYTHON_EXEC" "$SRC_DIR/check_gpu.py"
 
-if [ $? -ne 0 ]; then echo " Falló entrenamiento"; exit 1; fi
+echo ">>> [3] INICIANDO ENTRENAMIENTO (Batch 32)..."
+echo "--- CNN ---"
+"$PYTHON_EXEC" -u 03_train.py --model cnn --epochs 30 --batch_size 16 --val_split 0.2
 
-# 3. PREDICCIÓN FUTURA (Genera prediccion_futuro_2064.nc)
-echo -e "\n>>> [3/3] PROYECTANDO EL FUTURO..."
-python predict_future.py
-
-if [ $? -ne 0 ]; then echo " Falló predicción"; exit 1; fi
-
-echo -e "\n===  ¡PROCESO TERMINADO! ==="
-echo "Revisa el archivo: outputs/prediccion_futuro_2064.nc"
+echo "--- MLP ---"
+"$PYTHON_EXEC" -u 03_train.py --model mlp --epochs 30 --batch_size 16 --val_split 0.2

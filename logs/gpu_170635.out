@@ -1,0 +1,44 @@
+==========================================
+🚀 JOB GPU A100: tokikura
+==========================================
+>>> [1] VERIFICANDO GPU (NVIDIA-SMI):
+Mon Dec 22 02:03:57 2025       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 560.35.03              Driver Version: 560.35.03      CUDA Version: 12.6     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-SXM4-40GB          Off |   00000000:61:00.0 Off |                    0 |
+| N/A   38C    P0             29W /  400W |       4MiB /  40960MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA A100-SXM4-40GB          Off |   00000000:C1:00.0 Off |                    0 |
+| N/A   38C    P0             31W /  400W |       4MiB /  40960MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+>>> [2] VERIFICANDO PYTORCH (CUDA):
+========================================
+🔍 DIAGNÓSTICO DE HARDWARE (GPU/CPU)
+========================================
+⚡ CUDA Disponible: False
+⚠️  ADVERTENCIA: Estás corriendo en CPU. El entrenamiento será lento.
+   (Asegúrate de pedir '--gres=gpu:1' en Slurm)
+========================================
+>>> [3] INICIANDO ENTRENAMIENTO (Batch 32)...
+--- CNN ---
+Cargando dataset desde /mnt/beegfs/home/caliste/Proyecto_Clima_ML/data/processed/train_unified.pt...
+Arquitectura: CNN
+Dispositivo: cpu
+Datos de entrenamiento: 4752 muestras
+Datos de validación (Hindcast): 1188 muestras
+Iniciando entrenamiento...

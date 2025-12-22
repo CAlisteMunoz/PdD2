@@ -1,31 +1,53 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
-class ClimateEmulator(nn.Module):
-    def __init__(self, input_size, hidden_layers=[512, 512], dropout_rate=0.2):
-        """
-        MLP para emulación climática.
-        Args:
-            input_size: Cantidad total de píxeles (lat * lon).
-            hidden_layers: Lista con el tamaño de capas ocultas.
-            dropout_rate: Para evitar overfitting.
-        """
-        super(ClimateEmulator, self).__init__()
+class ClimateCNN(nn.Module):
+    def __init__(self, height, width):
+        super(ClimateCNN, self).__init__()
+        self.height = height
+        self.width = width
         
-        layers = []
-        in_dim = input_size
+        # Encoder
+        self.enc1 = nn.Conv2d(1, 32, kernel_size=3, padding=1)
+        self.enc2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
+        self.pool = nn.MaxPool2d(2, 2)
         
-        for h_dim in hidden_layers:
-            layers.append(nn.Linear(in_dim, h_dim))
-            #layers.append(nn.BatchNorm1d(h_dim)) # Normalización para estabilidad
-            layers.append(nn.ReLU())
-            layers.append(nn.Dropout(dropout_rate))
-            in_dim = h_dim
-            
-        # Capa de salida (reconstruye el mapa completo)
-        layers.append(nn.Linear(in_dim, input_size))
+        # Decoder
+        self.dec1 = nn.ConvTranspose2d(64, 32, kernel_size=2, stride=2)
+        self.dec2 = nn.Conv2d(32, 1, kernel_size=3, padding=1)
         
-        self.network = nn.Sequential(*layers)
+        self.relu = nn.ReLU()
+        
+    def forward(self, x):
+        # Encoder
+        x = self.relu(self.enc1(x))
+        x = self.pool(x)
+        x = self.relu(self.enc2(x))
+        x = self.pool(x)
+        
+        # Decoder
+        x = self.dec1(x)
+        
+        # --- CORRECCIÓN CLAVE ---
+        # Forzamos la interpolación al tamaño EXACTO original (721x1440)
+        # Esto evita el error de perder 1 pixel por ser impar
+        x = F.interpolate(x, size=(self.height, self.width), mode='bilinear', align_corners=False)
+        
+        x = self.dec2(x)
+        return x
+
+class ClimateMLP(nn.Module):
+    def __init__(self, height, width):
+        super(ClimateMLP, self).__init__()
+        # Conv2d 1x1 actúa como un MLP pixel a pixel
+        self.layer1 = nn.Conv2d(1, 128, kernel_size=1) 
+        self.layer2 = nn.Conv2d(128, 64, kernel_size=1)
+        self.layer3 = nn.Conv2d(64, 1, kernel_size=1)
+        self.relu = nn.ReLU()
 
     def forward(self, x):
-        return self.network(x)
+        x = self.relu(self.layer1(x))
+        x = self.relu(self.layer2(x))
+        x = self.layer3(x)
+        return x

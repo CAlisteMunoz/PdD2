@@ -1,0 +1,13 @@
+========================================================
+Job ID: 170632
+Nodo: host03
+Intérprete Python: /mnt/beegfs/home/caliste/micromamba/envs/clima_ai/bin/python
+========================================================
+
+>>> [1/2] INICIANDO ENTRENAMIENTO CNN (CPU)
+Cargando dataset desde /mnt/beegfs/home/caliste/Proyecto_Clima_ML/data/processed/train_unified.pt...
+Arquitectura: CNN
+Dispositivo: cpu
+Datos de entrenamiento: 4752 muestras
+Datos de validación (Hindcast): 1188 muestras
+Iniciando entrenamiento...

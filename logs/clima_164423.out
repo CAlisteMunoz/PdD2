@@ -1,0 +1,29 @@
+========================================================
+Job ID: 164423
+Nodo: host02
+Intérprete Python: /mnt/beegfs/home/caliste/micromamba/envs/clima_ai/bin/python
+========================================================
+
+>>> [1/2] INICIANDO ENTRENAMIENTO CNN (CPU)
+Cargando dataset desde /mnt/beegfs/home/caliste/Proyecto_Clima_ML/data/processed/train_unified.pt...
+Arquitectura: CNN
+Dispositivo: cpu
+Datos de entrenamiento: 4752 muestras
+Datos de validación (Hindcast): 1188 muestras
+Iniciando entrenamiento...
+Epoch 1/30 | Train Loss: 0.012718 | Val Loss: 0.002484
+Epoch 2/30 | Train Loss: 0.002358 | Val Loss: 0.002473
+Epoch 3/30 | Train Loss: 0.002351 | Val Loss: 0.002472
+Epoch 4/30 | Train Loss: 0.002345 | Val Loss: 0.002473
+Epoch 5/30 | Train Loss: 0.002339 | Val Loss: 0.002472
+Epoch 6/30 | Train Loss: 0.002336 | Val Loss: 0.002453
+Epoch 7/30 | Train Loss: 0.002334 | Val Loss: 0.002452
+Epoch 8/30 | Train Loss: 0.002335 | Val Loss: 0.002450
+Epoch 9/30 | Train Loss: 0.002331 | Val Loss: 0.002450
+Epoch 10/30 | Train Loss: 0.002332 | Val Loss: 0.002481
+Epoch 11/30 | Train Loss: 0.002333 | Val Loss: 0.002458
+Epoch 12/30 | Train Loss: 0.002330 | Val Loss: 0.002448
+Epoch 13/30 | Train Loss: 0.002329 | Val Loss: 0.002488
+Epoch 14/30 | Train Loss: 0.002328 | Val Loss: 0.002449
+Epoch 15/30 | Train Loss: 0.002331 | Val Loss: 0.002452
+Epoch 16/30 | Train Loss: 0.002326 | Val Loss: 0.002453
