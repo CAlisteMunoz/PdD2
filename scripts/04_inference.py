@@ -15,7 +15,7 @@ OUT_DIR = ROOT / "outputs/predictions"
 OUT_DIR.mkdir(exist_ok=True, parents=True)
 DEVICE = torch.device("cpu") 
 
-print("--- 🔮 GENERANDO PROYECCIÓN 2100 ---")
+print("--- GENERANDO PROYECCIÓN 2100 ---")
 
 # Cargar
 data = torch.load(DATA_PATH)
@@ -27,7 +27,7 @@ try:
     model.load_state_dict(torch.load(MODEL_PATH, map_location=DEVICE))
     model.eval()
 except:
-    sys.exit("❌ No hay modelo entrenado.")
+    sys.exit(" No hay modelo entrenado.")
 
 # Configurar Simulación
 # Último dato real conocido (final de 2014)
@@ -37,7 +37,7 @@ last_x = data['X'][-1].unsqueeze(0).unsqueeze(0).to(DEVICE)
 dates = pd.date_range(start='2015-01-01', end='2100-12-31', freq='MS')
 steps = len(dates)
 
-print(f"⚙️ Simulando {steps} meses (Autoregresivo)...")
+print(f" Simulando {steps} meses (Autoregresivo)...")
 results = []
 
 with torch.no_grad():
@@ -59,4 +59,4 @@ ds = xr.Dataset(
     coords={"time": dates, "lat": coords['lat'], "lon": coords['lon']}
 )
 ds.to_netcdf(OUT_DIR / "proyeccion_2100_final.nc")
-print(f"✅ Archivo listo: outputs/predictions/proyeccion_2100_final.nc")
+print(f" Archivo listo: outputs/predictions/proyeccion_2100_final.nc")
