@@ -14,7 +14,7 @@ RAW_DIR = ROOT / "data/raw"
 PROC_DIR = ROOT / "data/processed"
 PROC_DIR.mkdir(exist_ok=True, parents=True)
 
-print("--- 🏭 INICIANDO PROCESAMIENTO (ETL Mensual Robusto) ---")
+print("--- INICIANDO PROCESAMIENTO (ETL Mensual Robusto) ---")
 
 # --- 1. FUNCIÓN MAESTRA DE ESTANDARIZACIÓN ---
 def standardize_dataset(ds):
@@ -41,12 +41,12 @@ def standardize_dataset(ds):
 # --- 2. BUSCAR REFERENCIA (ERA5) ---
 era5_files = list(RAW_DIR.glob("*era5*.nc"))
 if not era5_files:
-    sys.exit("❌ ERROR: No encuentro archivo ERA5 en data/raw.")
+    sys.exit(" ERROR: No encuentro archivo ERA5 en data/raw.")
 
 # Cargar referencia
 ref_ds = xr.open_dataset(era5_files[0])
 ref_ds = standardize_dataset(ref_ds)
-print(f"📏 Referencia: ERA5 ({len(ref_ds.lat)}x{len(ref_ds.lon)})")
+print(f" Referencia: ERA5 ({len(ref_ds.lat)}x{len(ref_ds.lon)})")
 
 
 # --- 3. FUNCIÓN DE PROCESAMIENTO SEGURO ---
@@ -77,7 +77,7 @@ def process_file(filepath):
              if 'lat' in ds and 'lon' in ds:
                  data = data.assign_coords(lat=ds.lat, lon=ds.lon)
              else:
-                 print(f"   ⚠️ SALTADO: {filepath.name} - No encuentro coords lat/lon. Tiene: {list(ds.coords)}")
+                 print(f"   SALTADO: {filepath.name} - No encuentro coords lat/lon. Tiene: {list(ds.coords)}")
                  return None
 
         # A) REGRIDDING (Interpolación Espacial)
@@ -98,13 +98,13 @@ def process_file(filepath):
         return vals
 
     except Exception as e:
-        print(f"   ❌ ERROR CRÍTICO en {filepath.name}: {e}")
+        print(f"   ERROR CRÍTICO en {filepath.name}: {e}")
         return None
 
 # --- 4. EJECUCIÓN PRINCIPAL ---
 
 # A) Procesar ERA5
-print("\n🔹 Procesando ERA5...")
+print("\n Procesando ERA5...")
 era5_data = process_file(era5_files[0])
 if era5_data is not None:
     torch.save({
@@ -112,17 +112,17 @@ if era5_data is not None:
         'coords': {'lat': ref_ds.lat, 'lon': ref_ds.lon},
         'scaler': {'min': 0, 'max': 80}
     }, PROC_DIR / "val_era5.pt")
-    print("✅ ERA5 guardado.")
+    print(" ERA5 guardado.")
 
 # B) Procesar CMIP6
-print("\n🔹 Procesando Modelos CMIP6...")
+print("\n Procesando Modelos CMIP6...")
 files = sorted(list(RAW_DIR.glob("*.nc")))
 model_files = [f for f in files if "era5" not in f.name and "historical" in f.name]
 
 train_list = []
 
 if not model_files:
-    print("⚠️ ADVERTENCIA: No encontré modelos 'historical'.")
+    print(" ADVERTENCIA: No encontré modelos 'historical'.")
 else:
     for f in model_files:
         print(f"   -> {f.name}")
@@ -132,7 +132,7 @@ else:
             if processed.shape[1:] == (len(ref_ds.lat), len(ref_ds.lon)):
                 train_list.append(processed)
             else:
-                print(f"      ⚠️ Forma incorrecta tras interp: {processed.shape}. Se descarta.")
+                print(f"      Forma incorrecta tras interp: {processed.shape}. Se descarta.")
 
     # Fusionar
     if train_list:
@@ -143,10 +143,10 @@ else:
                 'coords': {'lat': ref_ds.lat, 'lon': ref_ds.lon},
                 'scaler': {'min': 0, 'max': 80}
             }, PROC_DIR / "train_unified.pt")
-            print(f"✅ Dataset de Entrenamiento Creado: {X_train.shape} (Meses, Lat, Lon)")
+            print(f" Dataset de Entrenamiento Creado: {X_train.shape} (Meses, Lat, Lon)")
         except ValueError as e:
-            print(f"❌ Error al fusionar: {e}")
+            print(f" Error al fusionar: {e}")
     else:
-        print("❌ Error: Ningún modelo pudo ser procesado correctamente.")
+        print(" Error: Ningún modelo pudo ser procesado correctamente.")
 
-print("\n🎉 ETL Terminado.")
+print("\n ETL Terminado.")
