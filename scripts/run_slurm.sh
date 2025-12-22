@@ -18,7 +18,7 @@ SRC_DIR="$PROJECT_DIR/src"
 cd "$SCRIPT_DIR" || exit 1
 
 echo "=========================================="
-echo "🚀 JOB GPU A100: $(hostname)"
+echo " JOB GPU A100: $(hostname)"
 echo "=========================================="
 
 echo ">>> [1] VERIFICANDO GPU (NVIDIA-SMI):"
