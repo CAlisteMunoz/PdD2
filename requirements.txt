@@ -1,10 +1,18 @@
-torch>=2.0.0
+# Core PyTorch (Versiones estables para GPU)
+torch>=2.1.0
+torchvision>=0.16.0
+torchaudio>=2.1.0
+
+# Procesamiento de Datos
+numpy>=1.24.0
+pandas>=2.0.0
 xarray>=2023.0.0
 netcdf4>=1.6.0
 dask>=2023.0.0
-numpy>=1.24.0
-pandas>=2.0.0
 scikit-learn>=1.2.0
+
+# Visualización y Notebooks
 matplotlib>=3.7.0
 jupyterlab>=4.0.0
 ipykernel>=6.0.0
+tqdm
